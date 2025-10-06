@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>HTML Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+      }
+      img{
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="../assets/bookshelf2.jpg"> 
+    <!-- Photo by <a href="https://unsplash.com/@__drz__?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">__ drz __</a> on <a href="https://unsplash.com/photos/assorted-titel-book-lot-IKd2pnrVKA0?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash">Unsplash</a> -->
+  
+    <canvas></canvas>
+    <script>
+      let user=prompt("Whatever you write below will affect the outcome of the image.")
+      while(!user){
+        user=prompt("Whatever you write below will affect the outcome of the image.")
+      }
+      const canvas = document.querySelector("canvas");
+      const context = canvas.getContext("2d");
+      let arr=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+      let letterHueArr=[]
+      let hslArr=[]
+      let width, height;
+      const image = document.querySelector('img');
+      let increment=255/26
+      let userInArr=[]
+
+      let pxScale = window.devicePixelRatio;
+      let imgScale=60
+
+      function setup() {
+        letterHueArr=[]
+        hslArr=[]
+        userInArr=[]
+        //fixed canvas size
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        //set css display size
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+
+        canvas.width = width * pxScale;
+        canvas.height = height * pxScale;
+
+        //normalize the coordinate system
+        context.scale(pxScale, pxScale);
+
+        for (let i=0;i<26;i++){
+            letterHueArr.push([arr[i],i*increment])
+        }
+        calcChar(user)
+      }
+
+      function draw() {
+
+        //draw to canvas
+        if(width>=height){
+          context.drawImage(image,0,0,width/imgScale,width/imgScale*(image.height/image.width))
+        }else{
+          context.drawImage(image,0,0,height/imgScale*(image.width/image.height),height/imgScale)
+        }
+
+        let pixels = context.getImageData(0, 0, width * pxScale, height * pxScale);
+        let pixelData = pixels.data;
+
+        context.textBaseline="middle"
+        context.textAlign="center"
+
+        context.clearRect(0,0,width,height)
+        
+        for(let y=0;y<canvas.height;y++){
+          for(let x=0;x<canvas.width;x++){
+            let index=(x+y*canvas.width)*4 //index position of every pixel
+
+            let r=pixelData[index]
+            let g=pixelData[index+1]
+            let b=pixelData[index+2]
+             
+
+            let average=(r+g+b)/3
+            if(showChar(average)){
+              context.fillStyle=`rgba(${r},${g},${b},.5)`
+
+              context.save()
+              // adjust the position of the circles
+              let radius=findCharAmount(average)
+              let currentChar=findChar(average)
+              context.font=10*radius+"px sans-serif"
+              context.translate(10,10)
+              context.beginPath()
+              //draw circle at corresponding coordinate
+              let randX=(Math.floor(Math.random() * 31) - 15)*radius*2
+              let randY=(Math.floor(Math.random() * 31) - 15)*radius*2
+              context.arc(x*imgScale/pxScale+randX,y*imgScale/pxScale+randY,radius*15,0,Math.PI*2)
+              context.fill()
+              context.fillStyle=`rgba(${r},${g},${b},1)`
+
+              context.fillText(currentChar,x*imgScale/pxScale+randX,y*imgScale/pxScale+randY)
+              context.restore()
+            }
+          }
+        }
+
+      }
+
+      function calcChar(userIn){
+        userIn=userIn.split(" ").join("")
+        for (let i = 0; i < userIn.length; i++) {
+          let charFound = false;
+          for (let j = 0; j < userInArr.length; j++) {
+              if (userInArr[j].char == userIn[i]) {
+                userInArr[j].amount += 1;
+                  charFound = true;
+                  break;
+              }
+            }
+          if (!charFound) {
+            userInArr.push({ char: userIn[i], amount: 1 });
+          }
+        }
+      }
+
+      function findCharAmount(ave){
+        let foundChar
+        for(let i=0;i<letterHueArr.length;i++){
+          if (ave>=letterHueArr[i][1]&&ave<(letterHueArr[i][1]+increment)){
+            foundChar=letterHueArr[i][0]
+            break;
+          }
+        }
+        for(let i=0;i<userInArr.length;i++){
+          if(foundChar==userInArr[i].char){
+            return userInArr[i].amount
+          }
+        }
+      }
+
+      function findChar(ave){
+        let foundChar
+        for(let i=0;i<letterHueArr.length;i++){
+          if (ave>=letterHueArr[i][1]&&ave<(letterHueArr[i][1]+increment)){
+            foundChar=letterHueArr[i][0]
+            return foundChar;
+          }
+        }
+      }
+      
+      function showChar(ave){
+        let max, foundChar
+        let toShow=false
+        for(let i=0;i<letterHueArr.length;i++){
+          if (ave>=letterHueArr[i][1]&&ave<(letterHueArr[i][1]+increment)){
+            max=letterHueArr[i][1]
+            foundChar=letterHueArr[i][0]
+            break;
+          }
+        }
+        if(foundChar.length){
+          for(let i=0;i<userInArr.length;i++){
+            if (foundChar.toString()==userInArr[i].char.toString()){
+              toShow=true
+              break;
+            }
+          }
+        }
+        return toShow
+      }
+      
+      //wait for DOM to load
+      window.addEventListener("load", () => {
+        setup();
+        draw();
+      });
+      window.addEventListener("resize", () => {
+        setup();
+        draw();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+body{
+    width: 100%;
+    height:100vh;
+    font-size: 20px;
+    overflow: hidden;
+    margin:0;
+    display:flex;
+    justify-content: space-between;
+    flex-flow:row wrap
+}
+canvas{
+    width:100%;
+    height:100%;
+    /* border:2px black solid */
+}

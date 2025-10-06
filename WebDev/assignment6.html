@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            background-color:rgb(46, 48, 49);
+            color:aliceblue;
+            text-align: center;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+        button{
+            padding:.5rem;
+            border:none;
+            background-color: aliceblue;
+            color:rgb(46, 48, 49);
+            width:fit-content;
+            font-size: 1.0rem;
+            cursor: pointer;
+        }
+        .screen{
+            width:100%;
+            height:100vh;
+        }
+        #start{
+            display:flex;
+            flex-flow: column wrap;
+            justify-content:center;
+            align-items:center;
+        }
+        #play{
+            display:none;
+            flex-flow: column nowrap;
+            justify-content:center;
+            align-items:center;
+        }
+        #end{
+            display:none;
+            flex-flow: column wrap;
+            justify-content:center;
+            align-items:center;
+        }
+        #board{
+            display: grid;
+            width:70%;
+            height:auto;
+            grid-template-columns: auto auto auto auto;
+            grid-template-rows: auto auto auto;
+            gap:10px;
+            justify-content: center;
+            align-items: center;
+        }
+        #name-leader{
+            display:none;
+        }
+    </style>
+</head>
+<body>
+    <div id="start" class="screen">
+        <h1>Memory Matching Madness . . .</h1><br>
+        <p>Play a fast paced game of memory and try to beat your time!</p><br>
+        <label>Select a difficulty:&nbsp;&nbsp;
+            <select id="dropdown" style="scale:1.2; cursor:pointer">
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+            </select>
+        </label><br>
+        <button id="start-button">START</button>
+    </div>
+    <div id="play" class="screen">
+        <h1>Ready, Set, Match!</h1><br>
+        <p id="time">time:</p><br>
+        <div id="board"></div>
+    </div>
+    <div id="end" class="screen">
+        <h1>Game Over</h1><br>
+        <p id="finished-time">Your time is</p><br>
+        <p id="best-time">Best time is</p><br>
+        <label id="name-leader">
+            Enter your name on the leaderboard:&nbsp;&nbsp;<input type="text">&nbsp;&nbsp;<button type="button">Add</button>
+        </label>
+        <button id="restart-button">RESTART</button>
+    </div>
+    <script>
+        let assets = [ 'electrabuzz.png', 'chansey.png', 'oddish.png','pikachu.png', 'paras.png', 'arcanine.png', 'ponita.png','venonat.png', 'eggsecute.png', 'machop.png', 'pidgey.png','psyduck.png', 'tauros.png', 'vulpix.png', 'gloom.png','krabby.png', 'butterfree.png', 'bulbasaur.png', 'clefairy.png','koffing.png', 'goldeen.png', 'magikarp.png', 'beedrill.png','lapras.png', 'meowth.png', 'ekans.png', 'jigglypuff.png','horsea.png', 'polywog.png', 'sandshrew.png', 'rattata.png','gengar.png', 'eevee.png', 'bellsprout.png', 'squirtle.png','seel.png', 'caterpie.png']
+        let startButton=document.getElementById("start-button")
+        let restartButton=document.getElementById("restart-button")
+        let startScreen=document.getElementById("start")
+        let playScreen=document.getElementById("play")
+        let endScreen=document.getElementById("end")
+        let difficulty=document.getElementById("dropdown")
+        let board=document.getElementById("board")
+        let pTime=document.getElementById("time")
+        let finishedTime=document.getElementById("finished-time")
+        let allBestTime=document.getElementById("best-time")
+        let enterNameGroup=document.getElementById("name-leader")
+        let correctSound=new Audio("../assets/webdevAssign6/correct.wav")
+        let incorrectSound=new Audio("../assets/webdevAssign6/incorrect.wav")
+
+        let currentlySelectedImgs=0
+        let prevSelected
+        let timerInterval
+        let timer=0
+        let timeout
+        
+        startButton.onclick=begin
+        restartButton.onclick=function(){
+            location.reload()
+        }
+
+        function begin(){
+            startScreen.style.display="none"
+            playScreen.style.display="flex"
+            displayGrid(difficulty.value)
+        }
+        
+        function displayGrid(difficulty){
+            let totalPokemon=0
+            let totalPokemonArr=[]
+            if(difficulty=="easy"){
+                board.style.gridTemplateColumns="auto auto auto auto"
+                board.style.gridTemplateRows="auto auto auto"
+                totalPokemon=12
+            }else if(difficulty=="medium"){
+                board.style.gridTemplateColumns="auto auto auto auto auto"
+                board.style.gridTemplateRows="auto auto auto auto"
+                totalPokemon=20
+            }else if(difficulty=="hard"){
+                board.style.gridTemplateColumns="auto auto auto auto auto auto"
+                board.style.gridTemplateRows="auto auto auto auto auto"
+                totalPokemon=30
+            }
+            for(let i=0;i<totalPokemon/2;i++){
+                let randIndex=Math.floor(Math.random()*assets.length)
+                while(totalPokemonArr.includes(assets[randIndex])){
+                    randIndex=Math.floor(Math.random()*assets.length)
+                }
+                totalPokemonArr.push(assets[randIndex])
+                totalPokemonArr.push(assets[randIndex])
+            }
+            console.log(totalPokemonArr)
+
+            addImage(totalPokemonArr)
+            timer=0
+            pTime.innerHTML=`Time: ${timer}`
+            timerInterval=setInterval(countingTime,1000)
+        }
+        function countingTime(){
+            timer++
+            pTime.innerHTML=`Time: ${timer}`
+        }
+        function addImage(imgSrcArr){
+            let totalLength=imgSrcArr.length
+            for(let i=0;i<totalLength;i++){
+                let newImg=document.createElement("img")
+                newImg.src="../assets/webdevAssign6/pokeball.png"
+                let randIndex=Math.floor(Math.random()*imgSrcArr.length)
+                newImg.dataset.alt="../assets/webdevAssign6/"+imgSrcArr[randIndex]
+                imgSrcArr.splice(randIndex,1)
+                board.appendChild(newImg)
+                newImg.style.width="6rem"
+                newImg.style.height="auto"
+                newImg.addEventListener("click",clickedImg)
+            }
+            return;
+        }
+        function setToBlank(){
+            let gameOver=true
+            for(i=0;i<board.children.length;i++){
+                    if(board.children[i].dataset.found!="true"){
+                        board.children[i].src="../assets/webdevAssign6/pokeball.png"
+                        gameOver=false
+                    }
+                }
+            if(gameOver){
+                clearInterval(timerInterval)
+                gameIsOver()
+            }
+        }
+        
+        function clickedImg(e){
+            if(e.currentTarget.dataset.found!="true"){
+                clearTimeout(timeout)
+            if(currentlySelectedImgs<1){
+                e.currentTarget.src=e.currentTarget.dataset.alt
+                prevSelected=e.currentTarget
+            }else if(currentlySelectedImgs==1&&e.currentTarget!=prevSelected){
+                e.currentTarget.src=e.currentTarget.dataset.alt
+                if(e.currentTarget.dataset.alt==prevSelected.dataset.alt){
+                    e.currentTarget.dataset.found=true
+                    prevSelected.dataset.found=true
+                    correctSound.play()
+                    setToBlank()
+                }else{
+                    incorrectSound.play()
+                    timeout=setTimeout(setToBlank,1000)
+                }
+            }
+            else{
+                setToBlank()
+                
+                currentlySelectedImgs=0
+                e.currentTarget.src=e.currentTarget.dataset.alt
+                prevSelected=e.currentTarget
+            }
+            currentlySelectedImgs++
+            }
+        }
+        function gameIsOver(){
+            let bestTime
+            let user
+            if (parseInt(window.localStorage.getItem("time"))<timer){
+                bestTime=window.localStorage.getItem("time")
+                user=window.localStorage.getItem("name")
+            }else{
+                window.localStorage.setItem("time",timer)
+                bestTime=timer
+                enterNameGroup.style.display="block"
+                enterNameGroup.children[1].onclick=function(){
+                    window.localStorage.setItem("name",enterNameGroup.children[0].value)
+                    user=enterNameGroup.children[0].value
+                    allBestTime.innerHTML=`The best score was ${bestTime} set by ${user}.`
+                    enterNameGroup.style.display="none"
+                }
+            }
+            allBestTime.innerHTML=`The best score was ${bestTime} set by ${user}.`
+            playScreen.style.display="none"
+            endScreen.style.display="flex"
+            finishedTime.innerHTML=`You finished in ${timer} seconds!`
+            
+        }
+    </script>
+</body>
+</html>

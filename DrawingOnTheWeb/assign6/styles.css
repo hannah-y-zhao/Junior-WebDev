@@ -1,0 +1,37 @@
+/*
+Drawing on the Web
+2 horizontally-aligned canvas elements
+*/
+
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: rgb(255, 255, 255);
+  display: flex;
+  flex-flow:column;
+  align-items: center;
+  justify-content: center;
+}
+
+#frame {
+  width: 1260px;
+  height: 400px;
+  margin: 2rem;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: space-evenly;
+}
+
+#desc{
+  margin: 0 4rem 0 ;
+  font-family: monospace;
+  font-size: 1.2em;
+}
+canvas {
+  width: 600px;
+  height: 400px;
+}
+
+@media only screen and (prefers-color-scheme: dark) {
+  body {background-color: rgb(17, 17, 17);}
+}

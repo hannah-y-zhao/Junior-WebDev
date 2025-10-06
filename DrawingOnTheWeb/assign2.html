@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 2</title>
+    <style>
+        body{
+            height: 100vh;
+            width: 100%;
+            background-image: url("../assets/paperTexture.jpg");
+            background-size: cover;
+            margin:0;
+            display:flex;
+            flex-direction: row;
+            justify-items: center;
+            align-items:center;
+            position:relative;
+        }
+        svg{
+            position:absolute;
+        }
+        img{
+            position:absolute;
+            width:23%;
+            height:auto;
+            position:absolute;
+            border: 5px rgb(218, 215, 215) solid;
+        }
+    </style>
+</head>
+<body>
+    <img src="../assets/cat1.png" style="top:50px; left: 1050px" id="cat1">
+    <img src="../assets/cat2.png" style="top:350px; left: 750px">
+    <img src="../assets/cat3.png" style="top:20px; left: 30px">
+    <img src="../assets/cat4.png" style="top:150px; left: 530px">
+    <img src="../assets/cat5.png" style="top:350px; left: 150px">
+
+    <svg width="300" height="300" style="top:5px; left: 290px" id="svg1">
+        <use href="cats.svg#cat1"/>
+    </svg>
+    <svg width="300" height="300" style="top:450px; left: 380px">
+        <use href="cats.svg#cat2"/>
+    </svg>
+    <svg width="300" height="300" style="top:250px; left: 20px"> 
+        <use href="cats.svg#cat3"/>
+    </svg>
+    <svg width="300" height="300" style="top:22px; left: 750px">
+        <use href="cats.svg#cat4"/>
+    </svg>
+    <svg width="300" height="300" style="top:370px; left: 1100px">
+        <use href="cats.svg#cat5"/>
+    </svg>
+    <script>
+        //https://www.w3schools.com/howto/howto_js_draggable.asp
+        // Make the DIV element draggable:
+dragElement(document.getElementById("svg1"));
+dragElement(document.getElementById("stuff"));
+
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+    // otherwise, move the DIV from anywhere inside the DIV:
+    elmnt.onmousedown = dragMouseDown;
+  
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+    </script>
+</body>
+</html>

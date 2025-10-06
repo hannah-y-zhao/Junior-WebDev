@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 1</title>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+    
+</head>
+<body>
+    <div id="container">
+         
+        <video src="../assets/videoGold.mp4" id="gold" controls autoplay playsinline loop muted></video>
+        <video src="../assets/night.mp4" id="night" controls autoplay playsinline loop muted></video>
+        
+        <div id="onTable">
+            <audio controls autoplay id="dayAudio">
+                <source src="../assets/day.mp3" type="audio/mp3">
+            </audio>
+            <img src="../assets/table.png" id="table">
+            <img src="../assets/bread1.png" id="bread1">
+            <img src="../assets/bread2.png" id="bread2">
+            <img src="../assets/bread3.png" id="bread3">
+            <img src="../assets/bread4.png" id="bread4">
+            <img src="../assets/bread5.png" id="bread5">
+            <img src="../assets/bread6.png" id="bread6">
+            <audio controls autoplay id="nightAudio">
+                <source src="../assets/night.mp3" type="audio/mp3">
+            </audio>
+        </div>
+        
+        
+    </div>
+    <script>
+        document.getElementById("gold").playbackRate=0.3
+        document.getElementById("night").playbackRate=0.5
+        let day=document.getElementById("dayAudio")
+        let night=document.getElementById("nightAudio")
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            
+            day.pause()
+            day.style.opacity=0
+            night.volume=1
+            }
+        else{
+            print('day')
+            night.pause()
+            night.style.opacity=0
+            day.volume=.5
+        }
+    </script>
+</body>
+</html>

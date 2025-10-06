@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Macro 3</title>
+    <style>
+      * {
+        margin: 0;
+        font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+      }
+      body {
+        display: flex;
+        flex-flow: row nowrap;
+      }
+      #scene {
+        position: relative;
+        width: fit-content;
+        height: 100%;
+      }
+      #col {
+        flex-direction: column;
+        justify-content: flex-start;
+      }
+      #background {
+        position: relative;
+        display: block;
+      }
+      #instructions {
+        padding: 0.8rem 2rem 0rem 2rem;
+        font-size: 1.2rem;
+      }
+      #info {
+        padding: 0.4rem 0.2rem 0.4rem 2rem;
+        display: inline-block;
+        font-size: 1.4rem;
+      }
+      #grass {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        width: 100%;
+        /* mix-blend-mode: darken; */
+        bottom: 0;
+        left: 0;
+      }
+      #grass img:hover {
+        background-color: rgba(212, 255, 0, 0.469);
+      }
+      button {
+        display: block;
+        padding: 1.2rem;
+        margin-top: 1.2rem;
+      }
+      #currentCaught {
+        font-size: 1.8rem;
+        font-weight: bolder;
+      }
+      table {
+        padding: 1.2rem;
+        font-size: 1.2rem;
+      }
+      td {
+        width: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="scene">
+      <!-- background img -->
+      <img
+        src="../assets/webdevAssign3/environment_forestbackground.png"
+        alt="background"
+        id="background"
+      />
+      <!-- three grass -->
+      <div id="grass">
+        <img id="grass1" src="../assets/webdevAssign3/grass.png" />
+        <img id="grass2" src="../assets/webdevAssign3/grass.png" />
+        <img id="grass3" src="../assets/webdevAssign3/grass.png" />
+      </div>
+    </div>
+    <div id="col">
+      <div id="instructions">
+        Your goal in this game is to earn as many Pokeballs as possible while
+        catching a variety of Pokemon along the way.<br /><br />
+        To play, simply click on one of the three grass clumps in the forest.
+        Behind one of those grass clumps is a Pokemon that can be caught. Behind
+        another grass clump are two free Pokeballs that you can use to try
+        again, and behind the last grass clump is nothing.<br /><br />
+        Note that each time you pick a grass clump you will be using one of your
+        Pokeballs, and when you run out the game is over!
+      </div>
+      <div id="info">
+        <button id="continue" onclick="nextGrass()">NEXT GRASS PATCH</button>
+        <button id="clearResults" onclick="clearResults()">
+          CLEAR RESULT HISTORY
+        </button>
+        <button id="startover" onclick="startOver()">START OVER</button>
+        <div id="currentCaught">You caught:</div>
+        <div id="pokemon">Your pokemon: 0</div>
+        <div id="pokeballs">Your pokeballs: 5</div>
+        <div id="results">Your progress:</div>
+      </div>
+      <table>
+        <tr style="background-color: rgba(0, 255, 255, 0.25)" id="rowPikachu">
+          <th>Pikachu</th>
+        </tr>
+        <tr style="background-color: rgba(0, 149, 255, 0.25)" id="rowBulbasaur">
+          <th>Bulbasaur</th>
+        </tr>
+        <tr style="background-color: rgba(34, 0, 255, 0.25)" id="rowCharmander">
+          <th>Charmander</th>
+        </tr>
+        <tr style="background-color: rgba(144, 0, 255, 0.25)" id="rowEevee">
+          <th>Eevee</th>
+        </tr>
+        <tr style="background-color: rgba(255, 0, 234, 0.25)" id="rowSquirtle">
+          <th>Squirtle</th>
+        </tr>
+      </table>
+    </div>
+    <script>
+      let grass = document.getElementById("grass").children;
+      let startover = document.getElementById("startover");
+      let progress = document.getElementById("results");
+      let progressArr = [];
+      startover.style.opacity = "0";
+      let pokeballs = 5;
+      let textPokeballs = document.getElementById("pokeballs");
+      let caughtPokemon = 0;
+      let textPokemon = document.getElementById("pokemon");
+      let alreadyClicked = 0;
+      let textCurrentCaught = document.getElementById("currentCaught");
+      let rowPikachu = document.getElementById("rowPikachu");
+      let rowBulbasaur = document.getElementById("rowBulbasaur");
+      let rowCharmander = document.getElementById("rowCharmander");
+      let rowEevee = document.getElementById("rowEevee");
+      let rowSquirtle = document.getElementById("rowSquirtle");
+      let pikachu = 0;
+      let bulbasaur = 0;
+      let charmander = 0;
+      let eevee = 0;
+      let squirtle = 0;
+
+      const pokemon = [
+        { name: "Pikachu", image: "../assets/webdevAssign3/pikachu.png" },
+        { name: "Bulbasaur", image: "../assets/webdevAssign3/bulbasaur.png" },
+        { name: "Charmander", image: "../assets/webdevAssign3/charmander.png" },
+        { name: "Eevee", image: "../assets/webdevAssign3/eevee.png" },
+        { name: "Squirtle", image: "../assets/webdevAssign3/squirtle.png" },
+      ];
+      function clickedGrass(event) {
+        if (alreadyClicked == 0 && pokeballs > 0) {
+          alreadyClicked++;
+          console.log("new", alreadyClicked);
+          let currentGrass = event.currentTarget;
+          let randNum = Math.floor(Math.random() * 3);
+          console.log(randNum);
+          if (randNum == 0) {
+            //pokemon
+            let caught = pokemon[Math.floor(Math.random() * 5)];
+            caughtPokemon++;
+            pokeballs--;
+            progressArr.push(caught.name);
+            currentGrass.src = caught.image;
+            currentCaught.innerText = "You caught a(n) " + caught.name + "!";
+            if (caught.name == "Pikachu") {
+              rowPikachu.innerHTML += "<td></td>";
+              pikachu++;
+              rowPikachu.children[0].innerText = "Pikachu: " + pikachu;
+            } else if (caught.name == "Bulbasaur") {
+              rowBulbasaur.innerHTML += "<td></td>";
+              bulbasaur++;
+              rowBulbasaur.children[0].innerText = "Bulbasaur: " + bulbasaur;
+            } else if (caught.name == "Charmander") {
+              rowCharmander.innerHTML += "<td></td>";
+              charmander++;
+              rowCharmander.children[0].innerText = "Charmander: " + charmander;
+            } else if (caught.name == "Eevee") {
+              rowEevee.innerHTML += "<td></td>";
+              eevee++;
+              rowEevee.children[0].innerText = "Eevee: " + eevee;
+            } else if (caught.name == "Squirtle") {
+              rowSquirtle.innerHTML += "<td></td>";
+              squirtle++;
+              rowSquirtle.children[0].innerText = "Squirtle: " + squirtle;
+            }
+
+            if (pikachu>0&&bulbasaur>0&&charmander>0&&eevee>0&&squirtle>0){
+                let allCaught= document.createElement('H1');
+                allCaught.innerHTML = "Congrats! You've caught one of each pokemon!";
+                document.getElementById("currentCaught").appendChild(allCaught)
+            }
+          } else if (randNum == 1) {
+            //pokeballs
+            pokeballs++;
+            progressArr.push("2 extra pokeballs");
+            currentGrass.src = "../assets/webdevAssign3/pokeballs.png";
+            currentCaught.innerText = "You caught 2 extra pokeballs!";
+          } else {
+            //nothing
+            pokeballs--;
+            progressArr.push("nothing");
+            currentGrass.style.opacity = "0";
+            currentCaught.innerText = "You caught nothing :(";
+          }
+          textPokeballs.innerText = "Your pokeballs: " + pokeballs;
+          textPokemon.innerText = "Your pokemon: " + caughtPokemon;
+          progress.innerText = "Your progress: ";
+          for (let i = progressArr.length - 1; i >= 0; i--) {
+            progress.innerText += "\n — " + progressArr[i];
+          }
+          if (pokeballs <= 0) {
+            startover.style.opacity = "1";
+            console.log("hes");
+          } else {
+            startover.style.opacity = "0";
+          }
+        }
+      }
+
+      for (let i = 0; i < grass.length; i++) {
+        grass[i].onclick = clickedGrass;
+        console.log(alreadyClicked);
+      }
+
+      function nextGrass() {
+        alreadyClicked = 0;
+        for (let i = 0; i < grass.length; i++) {
+          grass[i].src = "../assets/webdevAssign3/grass.png";
+          grass[i].style.opacity = "1";
+        }
+      }
+      function startOver() {
+        location.reload();
+      }
+      function clearResults() {
+        progress.innerText = "Your progress:";
+        progressArr = [];
+      }
+    </script>
+  </body>
+</html>

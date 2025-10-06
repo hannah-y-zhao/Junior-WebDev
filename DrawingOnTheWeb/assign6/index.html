@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>HTML Canvas and Web APIs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+
+  </style>
+</head>
+
+<body>
+  <div id="frame">
+    <canvas id="c1" width="600" height="400"></canvas>
+    <canvas id="c2" width="600" height="400"></canvas>
+  </div>
+  <div id="desc">
+    I'm using <a href="https://eonet.gsfc.nasa.gov/docs/v2.1">NASA's EONET (Earth Observatory Natural Event Tracker)
+      API</a> partly because I'm more comfortable with using NASA API's than some others that I looked at (Spotify,
+    tomtom, Twitter) as I've used a different NASA API before. But I also wanted to do something that wasn't data from
+    other planets/satellites/images, which is why I'm using EONET. This API provides data on natural events worldwide
+    and NRT (Near Real-Time) image layers. Personally, I was interested in recent events and "drawing" these events
+    depending on what kind of event it was, and how many times this kind of event has happened within the last 50 days.
+  </div>
+  <script>
+    const canvas1 = document.getElementById("c1")
+    const canvas2 = document.getElementById("c2")
+    let pxScale = window.devicePixelRatio;
+    let eventArr = [
+      {
+        name: "Fire",
+        color: "253,119,91",
+        shape: "circle",
+        dimension: 500,
+        instance:1,
+        days:0
+      },
+      {
+        name: "Cyclone",
+        color: "133,145,164",
+        shape: "downTriangle",
+        dimension: 120,
+        instance:1,
+        days:0
+      },
+      {
+        name: "Volcano",
+        color: "120,8,17",
+        shape: "upTriangle",
+        dimension: 53,
+        instance:1,
+        days:0
+      },
+      {
+        name: "Iceberg",
+        color: "3,139,207",
+        shape: "square",
+        dimension: 10,
+        instance:1,
+        days:0
+      }
+      
+      ]
+    let url = "https://eonet.gsfc.nasa.gov/api/v2.1/events?days=50"
+    let apiKey = "Ys2vLUm8ayFkz9NFGKrnuSp2c756WdaIwSbleWG6";
+    let query = url + "?api_key=" + apiKey
+    let filtered=false
+
+    function setupCanvas(canvas) {
+      const context = canvas.getContext("2d");
+      let width, height;
+
+      width = canvas.width;
+      height = canvas.height
+
+      canvas.width *= pxScale;
+      canvas.height *= pxScale;
+
+      context.scale(pxScale, pxScale);
+
+      context.fillStyle = "white"
+      context.fillRect(0,0,width,height)
+
+      for (let i = 0; i < eventArr.length; i++) {
+
+        let a=0.25
+
+        if (!filtered){
+          a=0.25
+        }else{
+           a=eventArr[i].instance/(eventArr[0].instance+eventArr[1].instance+eventArr[2].instance+eventArr[3].instance)
+        }
+        context.beginPath()
+        context.fillStyle = `rgba(${eventArr[i].color},${a})`
+        eventArr[i].dimension*=eventArr[i].instance
+        console.log("dimension "+eventArr[i].dimension)
+
+        if (eventArr[i].shape=="circle"){
+          context.arc(width / 8+(width*i/4), height / 2, (eventArr[i].dimension/2), 0, Math.PI * 2)
+        }else if (eventArr[i].shape=="downTriangle"){
+          context.moveTo(width / 8+(width*i/4)-(eventArr[i].dimension/2),(height/2)-(eventArr[i].dimension/2))
+          context.lineTo(width / 8+(width*i/4)+(eventArr[i].dimension/2),(height/2)-(eventArr[i].dimension/2))
+          context.lineTo(width / 8+(width*i/4),(height/2)+(eventArr[i].dimension/2))
+        }
+        else if (eventArr[i].shape=="upTriangle"){
+          context.moveTo(width / 8+(width*i/4),(height/2)-(eventArr[i].dimension/2))
+          context.lineTo(width / 8+(width*i/4)-(eventArr[i].dimension/2),(height/2)+(eventArr[i].dimension/2))
+          context.lineTo(width / 8+(width*i/4)+(eventArr[i].dimension/2),(height/2)+(eventArr[i].dimension/2))
+        }else if (eventArr[i].shape=="square"){
+          context.fillRect(width / 8+(width*i/4)-(eventArr[i].dimension/2),(height/2)-(eventArr[i].dimension/2),eventArr[i].dimension,eventArr[i].dimension)
+        }
+        context.fill()
+        context.closePath()
+        // console.log(eventArr[i].dimension)
+      }
+    }
+
+    function callAPI(){
+      filtered=true
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          filterAPI(data)
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }
+
+    function filterAPI(data){
+      // console.log(data.events)
+      for (let i=0;i<data.events.length;i++){
+        for(let j=0;j<eventArr.length;j++){
+          if (data.events[i].title.includes(eventArr[j].name)){
+            eventArr[j].instance++
+            break;
+          }
+        }
+        
+      }
+      console.log(eventArr)
+      setupCanvas(canvas2)
+    }
+
+    window.addEventListener("load", function () {
+      setupCanvas(canvas1)
+      callAPI()
+      
+    })
+  </script>
+</body>
+
+</html>

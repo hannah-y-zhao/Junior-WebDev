@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment 7</title>
+    <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <script>
+        let counter=0
+        function loadimg(){
+            counter++
+            console.log(counter)
+        }
+    </script>
+</head>
+<body>
+    <div id="container">
+         
+        <!-- <video src="../assets/videoGold.mp4" id="gold" style="overflow: hidden;width:100%;height:100%;"controls autoplay playsinline loop muted></video> -->
+        
+        <div id="onTable">
+            <audio controls autoplay id="dayAudio">
+                <source src="../assets/day.mp3" type="audio/mp3">
+            </audio>
+            <img src="../assets/table.png" id="table" onload="loadimg()">
+            <img src="../assets/bread1.png" id="bread1" class="bread" onload="loadimg()">
+            <img src="../assets/bread2.png" id="bread2" class="bread" onload="loadimg()">
+            <img src="../assets/bread3.png" id="bread3" class="bread" onload="loadimg()">
+            <img src="../assets/bread4.png" id="bread4" class="bread" onload="loadimg()">
+            <img src="../assets/bread5.png" id="bread5" class="bread" onload="loadimg()">
+            <img src="../assets/bread6.png" id="bread6" class="bread" onload="loadimg()">
+            <canvas id="breadcanvas" width="300" height="150" style="width: 300px; height: 150px;"></canvas>
+        </div>
+        
+        
+    </div>
+    <script>
+        const canvas=document.querySelector("canvas")
+        const context=canvas.getContext("2d")
+        const breads=document.querySelectorAll(".bread")
+        let breadsObj=[]
+
+        let canvasWidth
+        let canvasHeight
+        let pxScale = window.devicePixelRatio;
+        let cellWidth,cellHeight
+
+        class Bread {
+            constructor(img, x, y, w, h) {
+                this.img = img
+                this.width = w
+                this.height = h
+                this.xpos = x
+                this.ypos = y
+                this.speed = 3
+            }
+            display() {
+                context.drawImage(this.img, this.xpos, this.ypos, this.width, this.height)
+            }
+            move(moving) {
+                this.xpos += moving
+                if (this.xpos > canvasWidth) {
+                    this.xpos = this.xpos - canvasWidth - this.width
+                }
+            }
+        }
+        let checkDraw=false
+
+        function setup() {
+            const bounds=canvas.getBoundingClientRect()
+            width=bounds.width
+            height=bounds.height
+            // imgWidth=width/6
+
+            // set the CSS display size
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+
+            canvasWidth = width * pxScale;
+            canvasHeight = height * pxScale;
+            canvas.width=canvasWidth
+            canvas.height=canvasHeight
+
+            cellWidth=canvasWidth/(breads.length-1)
+            cellHeight=canvasHeight
+
+            context.scale(pxScale, pxScale);
+            // context.fillStyle=`red`
+            // context.fill()
+            context.clearRect(0, 0, canvasWidth, canvasHeight)
+            // context.fillRect(0,0,width,height)
+            if(breadsObj.length<1){
+                for(let i=0;i<breads.length;i++){
+                let bread
+
+                const w = cellWidth * 0.7;
+                const h = breads[i].height / breads[i].width * w;
+                const x = cellWidth * i + (cellWidth - w) / 2;
+                const y = 0;
+                bread = new Bread(breads[i], x, y, w, h);
+
+                breads[i].style.display = "none"
+                bread.display()
+                breadsObj.push(bread)
+                console.log("working")
+                }
+            }else{
+                for(let i=0;i<breadsObj.length;i++){
+                const w = cellWidth * 0.7;
+                const x = cellWidth * i + (cellWidth - w) / 2;
+                const h = breads[i].height / breads[i].width * w;
+                breadsObj[i].xpos=x
+                breadsObj[i].width=w
+                breadsObj[i].height=h
+                }
+            }
+            
+            console.log("beforedraw")
+            if(!checkDraw){
+                window.requestAnimationFrame(draw)
+                checkDraw=true
+            }
+        }
+        let fps = 60; // frames per second (60 is a good standard)
+        let previousTime = performance.now(); // time since navigating page
+
+        let frameInterval = 1000 / fps; // milliseconds between frames
+        let deltaTimeMultiplier = 1; // initialize multiplier value
+        // amount of time between animation function calls
+        let delta_time = 0;
+
+        function draw(currentTime){
+            deltaTime = currentTime - previousTime;
+            deltaTimeMultiplier = deltaTime / frameInterval;
+            previousTime = currentTime;   
+
+            context.clearRect(0, 0, canvasWidth, canvasHeight)
+            for (let i = 0; i < breadsObj.length; i++) {
+                breadsObj[i].display()
+                breadsObj[i].move(breadsObj[i].speed * deltaTimeMultiplier)
+            }
+            requestAnimationFrame(draw)
+            // console.log("drawing")
+        }
+        // setup()
+        function checkimg(){
+            if(counter<7){
+                window.setTimeout(checkimg,100)
+                return
+            }else{
+                setup()
+            }
+        }
+        window.setTimeout(checkimg,100)
+        window.addEventListener("resize",function(){
+            context.clearRect(0, 0, canvasWidth, canvasHeight)
+            setup()
+        })
+    </script>
+</body>
+</html>

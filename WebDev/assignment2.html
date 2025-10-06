@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Macro 2</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        width: 100%;
+        height: 100%;
+      }
+      #holder {
+        background-image: url("../assets/webdevAssign2/backgrounds/afternoon.png");
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        background-repeat: no-repeat;
+        background-position: center center;
+      }
+      #lego {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        position: absolute;
+        right: 10rem;
+        bottom: 0;
+      }
+      #info {
+        position: absolute;
+        top: 50px;
+        left: 50px;
+      }
+      #quote {
+        color: white;
+        font-size: 2.5rem;
+      }
+      #time {
+        background-color: rgba(255, 255, 255, 0.75);
+        width: fit-content;
+        padding: 1rem;
+        border-radius: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="holder">
+      <div id="info">
+        <div id="quote">infsfdjpfsj</div>
+        <br />
+        <div id="time">The time is currently XX:YY.</div>
+      </div>
+      <div id="lego">
+        <img id="head" src="../assets/webdevAssign2/heads/head1.png" />
+        <img id="body" src="../assets/webdevAssign2/bodies/body1.png" />
+      </div>
+    </div>
+    <script>
+      let userNum = prompt("Provide a number greater or equal than 3.");
+      while (isNaN(userNum) == true || userNum < 3) {
+        userNum = prompt(
+          "That was not a valid input. Provide a number greater or equal than 3."
+        );
+        // console.log(userNum)
+      }
+
+      const words = [
+        "Awesome",
+        "Fantastic",
+        "Fabulous",
+        "Superb",
+        "Perfect",
+        "Brilliant",
+        "Coming up Roses",
+      ];
+      let randWord = words[Math.floor(Math.random() * words.length)];
+      let quote = document.getElementById("quote");
+      let dateObj = new Date();
+      let currentHour = dateObj.getHours();
+      let currentMin = dateObj.getMinutes();
+      let time = document.getElementById("time");
+      let ampm;
+      let greeting;
+      let holder = document.getElementById("holder");
+
+      if (currentHour < 6) {
+        greeting = "Good Night!";
+        holder.style.backgroundImage =
+          "url('../assets/webdevAssign2/backgrounds/night.png')";
+      } else if (currentHour >= 6 && currentHour < 12) {
+        greeting = "Good Morning!";
+        holder.style.backgroundImage =
+          "url('../assets/webdevAssign2/backgrounds/morning.png')";
+      } else if (currentHour >= 12 && currentHour < 18) {
+        greeting = "Good Afternoon!";
+        holder.style.backgroundImage =
+          "url('../assets/webdevAssign2/backgrounds/afternoon.png')";
+      } else {
+        greeting = "Good Evening!";
+        holder.style.backgroundImage =
+          "url('../assets/webdevAssign2/backgrounds/evening.png')";
+      }
+      if (currentHour > 12) {
+        currentHour -= 12;
+        ampm = "PM";
+      } else {
+        ampm = "AM";
+      }
+      quote.innerHTML = greeting;
+      time.innerHTML =
+        "The time is currently " +
+        currentHour +
+        ":" +
+        currentMin +
+        " " +
+        ampm +
+        ".";
+      quote.innerHTML += " Everything is " + randWord;
+      let lucky1 = Math.floor(Math.random() * (parseInt(userNum) + 1));
+      let lucky2 = Math.floor(Math.random() * (parseInt(userNum) + 1));
+
+      while (lucky1 == 0) {
+        lucky1 = Math.floor(Math.random() * (parseInt(userNum) + 1));
+        //console.log("1:"+lucky1)
+      }
+      while (lucky2 == lucky1 || lucky2 == 0) {
+        lucky2 = Math.floor(Math.random() * (parseInt(userNum) + 1));
+        //console.log("2:"+lucky2)
+      }
+      let lucky3 = Math.floor(Math.random() * (parseInt(userNum) + 1));
+      while (lucky3 == lucky1 || lucky3 == lucky2 || lucky3 == 0) {
+        lucky3 = Math.floor(Math.random() * (parseInt(userNum) + 1));
+        //console.log("3:" +lucky3)
+      }
+      //console.log(lucky1, lucky2, lucky3)
+      time.innerHTML +=
+        "Your lucky numbers are: " + lucky1 + ", " + lucky2 + ", " + lucky3;
+      let randHead = Math.floor(Math.random() * 7);
+      while (randHead == 0) {
+        randHead = Math.floor(Math.random() * 7);
+      }
+      let randBody = Math.floor(Math.random() * 7);
+      while (randBody == 0) {
+        randBody = Math.floor(Math.random() * 7);
+      }
+      let head = document.getElementById("head");
+      let body = document.getElementById("body");
+      head.src = "../assets/webdevAssign2/heads/head" + randHead + ".png";
+      body.src = "../assets/webdevAssign2/bodies/body" + randBody + ".png";
+      //console.log(randBody, randHead)
+    </script>
+  </body>
+</html>

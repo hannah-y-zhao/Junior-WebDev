@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            font-family:Arial, Helvetica, sans-serif
+        }
+        body{
+            width:100%;
+            height:100vh;
+            background-image: url("../assets/webdevAssign5/corkboard.jpg");
+            background-position: center;
+        }
+        #header{
+            display:flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            align-items: center;
+            padding:2rem;
+            color:white;
+            position:relative;
+        }
+        #dropdown{
+            position:absolute;
+            top:2rem;
+            right:2rem;
+        }
+        #add-item{
+            position:absolute;
+            bottom:2rem;
+            right:2rem; 
+            background-color: rgba(255, 255, 255, 0);
+            border:none;
+            width:3rem;
+            height:3rem;
+            background-image: url("../assets/webdevAssign5/add_button.png");
+            background-position: center;
+            background-size: cover;
+        }
+        #add-item:hover{
+            transform:scale(1.5)
+        }
+        .panel{
+            background-color: white;
+            border-radius: 2rem;
+            padding:2rem;
+            width:30%;
+            height:fit-content;
+            position: absolute;
+            position:absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .group{
+            padding:1rem 0 1rem 0;
+            display:flex;
+            flex-flow: column nowrap;
+        }
+        .group-edit{
+            padding:1rem 0 1rem 0;
+            display:flex;
+            flex-flow: row nowrap;
+        }
+        .button{
+            padding:.2rem;
+        }
+        .hidden{
+            display:none
+        }
+        #container{
+            width: 100%;
+            /* display:grid;
+            grid-template-columns: auto auto auto auto auto;
+            gap: 2rem; */
+            padding:2rem;
+            align-self:baseline;
+        }
+        #error{
+            background-color: red;
+            width:100%;
+            text-align: center;
+            padding:.5rem 0 .5rem 0;
+            margin-bottom: 1rem;
+        }
+        .item{
+            width:150px;
+            height:150px;
+            padding: 1rem;
+            margin:1rem;
+            display:inline-block;
+            position:relative;
+        }
+        .item:hover > .delete-item{
+            opacity:1
+        }
+        .item:hover{
+            cursor:pointer;
+        }
+        .delete-item:hover{
+            cursor:crosshair;
+        }
+        .delete-item{
+            background-color: rgba(255, 255, 255, 0);
+            border:none;
+            width:1rem;
+            height:1rem;
+            background-image: url("../assets/webdevAssign5/delete_button.png");
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            opacity: 0;
+            position:absolute;
+            top:-.5rem;
+            right:-.5rem;
+        }
+        .edit-item{
+            background-color: rgba(255, 255, 255, 0);
+            border:none;
+            width:1.5rem;
+            height:1.5rem;
+            background-image: url("../assets/webdevAssign5/edit_button.png");
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            position:absolute;
+            top:-.5rem;
+            left:-.5rem;
+        }
+        .edit-item:hover{
+            cursor:crosshair;
+            transform:scale(1.5)
+        }
+        .check-complete{
+            width:20px;
+            height:20px;
+        }
+        .labels{
+            display: flex;
+            align-items: center;
+        }
+        .fall{background-color: #db7632;}
+        .winter{background-color: #abbbf6;}
+        .spring{background-color: #ffa4b0;}
+        .summer{background-color: #F3BA26;}
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>Seasonal To-Do List</h1>
+    </div>
+    <select id="dropdown">
+        <option value="all">Show all items</option>
+        <option value="fall">Show Fall items</option>
+        <option value="winter">Show Winter items</option>
+        <option value="spring">Show Spring items</option>
+        <option value="summer">Show Summer items</option>
+        <option value="complete">Show completed items</option>
+        <option value="incomplete">Show not completed items</option>
+    </select>
+    <div id="container"></div>
+    <button id="add-item"></button>
+    <div id="adding-item" class="panel hidden">
+        <div id="error" class="hidden">
+            Please completely fill out the form.
+        </div>
+        <h3>Add New Item</h3>
+        <div class="group">
+            Title:
+            <input type="text" id="title">
+        </div>
+        <div class="group">
+            Category:
+            <select id="dropdown-item">
+                <option value="fall">Fall</option>
+                <option value="winter">Winter</option>
+                <option value="spring">Spring</option>
+                <option value="summer">Summer</option>
+            </select>
+        </div>
+        <div class="group">
+            Description:
+            <input type="text" id="description" style="height:4rem">
+        </div>
+        <button id="save-item" class="button">Save</button>
+        <button id="cancel-item" class="button">Cancel</button>
+    </div>
+    <div id="item-info" class="panel hidden">
+        <h3>title</h3>
+        <div class="group" id="saved-item-season">Season:</div>
+        <div class="group" id="saved-item-desc">desc:</div>
+        <hr>
+        <div class="group" id="saved-item-created">created:</div>
+        <div class="group" id="saved-item-accessed">last accessed:</div>
+        <button id="close" class="button">Close</button>
+    </div>
+    <div id="edit-item" class="panel hidden">
+        <div id="edit-error" class="hidden">
+            Please completely fill out the form.
+        </div>
+        <div class="group-edit">
+            Title:&nbsp;
+            <input type="text" id="edit-title" style="width:100%">
+        </div>
+        <div class="group-edit">
+            Category:&nbsp;
+            <select id="edit-dropdown-item">
+                <option value="fall">Fall</option>
+                <option value="winter">Winter</option>
+                <option value="spring">Spring</option>
+                <option value="summer">Summer</option>
+            </select>
+        </div>
+        <div class="group-edit">
+            Description:&nbsp;
+            <input type="text" id="edit-description" style="height:4rem; width:100%" >
+        </div>
+        <button id="edit-save-item" class="button">Save</button>
+        <button id="edit-cancel-item" class="button">Cancel</button>
+    </div>
+    <script>
+        let addButton=document.getElementById("add-item")
+        let addItemPanel=document.getElementById("adding-item")
+        let itemInfoPanel=document.getElementById("item-info")
+        let saveButton=document.getElementById("save-item")
+        let errorMsg=document.getElementById("error")
+        let currentTitle=document.getElementById("title")
+        let currentSeason=document.getElementById("dropdown-item")
+        let currentDesc=document.getElementById("description")
+        let container=document.getElementById("container")
+        let cancelButton=document.getElementById("cancel-item")
+        let closeButton=document.getElementById("close")
+        let filterDropdown=document.getElementById("dropdown")
+
+        let editItemPanel=document.getElementById("edit-item")
+        let editError=document.getElementById("edit-error")
+        let editTitle=document.getElementById("edit-title")
+        let editSeason=document.getElementById("edit-dropdown-item")
+        let editDesc=document.getElementById("edit-description")
+        let editSaveButton=document.getElementById("edit-save-item")
+        let editCancelButton=document.getElementById("edit-cancel-item")
+        let tempItem
+        
+        addButton.onclick=addNewItem
+        saveButton.onclick=saveNewItem
+        cancelButton.onclick=function(){addItemPanel.classList.add("hidden")}
+        filterDropdown.onchange=filter
+        closeButton.onclick=function(){
+            itemInfoPanel.classList.add("hidden")
+        }
+        editSaveButton.onclick=updateItem
+        editCancelButton.onclick=function(){
+            editItemPanel.classList.add("hidden")
+        }
+
+        function updateItem(){
+            tempItem.dataset.title=editTitle.value
+            tempItem.classList.remove(tempItem.dataset.season)
+            tempItem.dataset.season=editSeason.value
+            tempItem.classList.add(editSeason.value)
+            tempItem.dataset.desc=editDesc.value
+            tempItem.firstChild.innerHTML=editTitle.value
+            editItemPanel.classList.add("hidden")
+        }
+        function addNewItem(){
+            addItemPanel.classList.remove("hidden")
+            errorMsg.classList.add("hidden")
+            currentTitle.value=""
+            currentDesc.value=""
+        }
+        function saveNewItem(){
+            if(!currentTitle.value||!currentDesc.value){
+                errorMsg.classList.remove("hidden")
+            }
+            else{
+                errorMsg.classList.add("hidden")
+                let newItem=document.createElement("div")
+                newItem.classList.add("item")
+                newItem.classList.add(currentSeason.value)
+                newItem.dataset.title=currentTitle.value
+                newItem.dataset.season=currentSeason.value
+                newItem.dataset.desc=currentDesc.value
+                newItem.dataset.created=getTime()
+                // newItem.innerHTML=`<h3>${currentTitle.value}</h3><br><label class="labels"><input type="checkbox" class="check-complete">&nbsp;Completed</label>`
+                newItem.innerHTML=`<h3>${currentTitle.value}</h3><br>`
+                let newLabel=document.createElement("label")
+                newLabel.classList.add("labels")
+                let newInputText = document.createElement("input");
+                newInputText.setAttribute("type", "checkbox");
+                newInputText.classList.add("check-complete")
+                newLabel.appendChild(newInputText)
+                newLabel.innerHTML+=`&nbsp;Completed`
+                newItem.appendChild(newLabel)
+
+                let newDeleteButton=document.createElement("button")
+                newDeleteButton.classList.add("delete-item")
+                newItem.appendChild(newDeleteButton)
+                container.appendChild(newItem)
+                newDeleteButton.onclick=deleteItem
+                newItem.onclick=itemInfo
+                newItem.dataset.checked=false
+                addItemPanel.classList.add("hidden")
+                let newEditButton=document.createElement("button")
+                newEditButton.classList.add("edit-item")
+                newItem.appendChild(newEditButton)
+                newEditButton.onclick=editItem
+
+                if(currentSeason.value!=filterDropdown.value&&filterDropdown.value!="all"){
+                    newItem.style.display="none"
+                    console.log(currentSeason.value,filterDropdown.value)
+                }
+                if(filterDropdown.value=="incomplete"){
+                    newItem.style.display="inline-block"
+                }
+                newLabel.addEventListener("click",function(e){
+                    e.stopPropagation()
+                    newItem.dataset.checked=e.currentTarget.firstChild.checked
+                    console.log(newItem.dataset.checked,"something")
+                    filter()
+                })
+            }
+        }
+        function deleteItem(e){
+            container.removeChild(e.currentTarget.parentNode)
+            e.stopPropagation()
+        }
+        function itemInfo(e){
+            itemInfoPanel.classList.remove("hidden")
+            itemInfoPanel.children[0].innerHTML=e.currentTarget.dataset.title
+            itemInfoPanel.children[1].innerHTML="Season: "+e.currentTarget.dataset.season
+            itemInfoPanel.children[2].innerHTML="Description: "+e.currentTarget.dataset.desc
+            itemInfoPanel.children[4].innerHTML="Created on: "+e.currentTarget.dataset.created
+            itemInfoPanel.children[5].innerHTML="Accessed on: "+getTime()
+            console.log(getTime())
+            e.stopPropagation()
+        }
+        function editItem(e){
+            e.stopPropagation()
+            editItemPanel.classList.remove("hidden")
+            let currentItem=e.currentTarget.parentNode
+            console.log(currentItem)
+            editTitle.value=currentItem.dataset.title
+            editSeason.value=currentItem.dataset.season
+            editDesc.value=currentItem.dataset.desc
+            tempItem=currentItem
+        }
+        function getTime(){
+            let theDate=new Date()
+            let month=theDate.getMonth()+1
+            let day=theDate.getDate()
+            let year=theDate.getFullYear()
+            let hour=theDate.getHours()
+            let ampm
+            if (hour > 12) {
+                hour -= 12;
+                ampm = "PM";
+            } else {
+                ampm = "AM";
+            }
+            let min=theDate.getMinutes()
+            if(min<10){
+                min="0"+min.toString()
+            }
+            let currentTime=month+"/"+day+"/"+year+" "+hour+":"+min+" "+ampm
+            return currentTime
+        }
+        function filter(){
+            let filterSeason=filterDropdown.value
+            for(let i=0;i<container.children.length;i++){
+                if(filterSeason=="all"){
+                    container.children[i].style.display="inline-block"
+                }else if(filterSeason=="complete"&&container.children[i].dataset.checked=="true"){
+                    container.children[i].style.display="inline-block"
+                    console.log(container.children[i].dataset.checked)
+                }else if(filterSeason=="incomplete"&&container.children[i].dataset.checked=="false"){
+                    container.children[i].style.display="inline-block"
+                    console.log("incomplete",container.children[i].dataset.checked,"dafsl")
+                }else if (container.children[i].dataset.season!=filterSeason){
+                    container.children[i].style.display="none"
+                }else{
+                    container.children[i].style.display="inline-block"
+                }
+                console.log(container.children[i].dataset,container.children[i].dataset.checked)
+            }
+            console.log(filterSeason)
+        }
+    </script>
+</body>
+</html>

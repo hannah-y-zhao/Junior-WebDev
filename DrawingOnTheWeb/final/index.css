@@ -1,0 +1,54 @@
+*{
+    margin:0;
+    padding:0;
+    overflow: hidden;
+    font-family:sans-serif;
+    font-size: 48px;
+    
+}
+body{
+    width:100%;
+    height: 100vh;
+    position: relative;
+    background-color: black;
+    display: flex;
+    flex-flow:row wrap;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.random{
+    position:absolute;
+    padding:2rem;
+}
+.random-mobile{
+    position:absolute;
+    padding:2rem;
+    color:white
+}
+.random:hover{
+    color:white;
+}
+.linked{
+    padding:3rem;
+    font-size: 52px;
+    z-index:100
+}
+.linked-mobile{
+    padding:3rem;
+    font-size: 52px;
+    color:aqua;
+    border:1px aqua solid;
+    z-index:100
+}
+.linked:hover{
+    color:aqua;
+    cursor:pointer;
+    border:1px aqua solid
+}
+a{
+    background-color: black;
+    color:black
+}
+a:hover{
+    color:aqua
+}

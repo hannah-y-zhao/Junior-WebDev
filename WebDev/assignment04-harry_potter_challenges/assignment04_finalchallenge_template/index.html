@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <title>Design Your own Hogwarts!</title>
+    <style type="text/css">
+      body{
+        margin:2rem;
+      }
+      #row{
+        display:flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+      }
+      #column{
+        flex-flow:column;
+      }
+      #textures{
+        width:70%;
+        display: flex;
+        flex-flow: row wrap;
+        gap: .25rem;
+      }
+      #userMap{
+        width:320px;
+        height:320px;
+        border: 2px black solid;
+        box-sizing: content-box;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: center;
+      }
+      #userMap > *:hover{
+        border: 2px red solid;
+      }
+      .selected{
+        border:2px yellow solid;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Design Your Own Hogwarts!</h1>
+
+    <div id="row">
+      <div class="column" >
+        <div id="userMap"></div>
+      </div>
+      <div class="column" id="textures">
+        
+      </div>
+    </div>
+    <!-- load in the image array file - this makes available a new array of all image filenames that you can use for this project -->
+    <!-- Assets courtesy of Crawl Stone Soup: https://github.com/crawl/tiles -->
+    <script src="image_array.js"></script>
+
+    <!-- write your code here -->
+    <script>
+      let textures=document.getElementById("textures")
+      let userMap=document.getElementById("userMap")
+      let currentImgSrc;
+      
+      for(let i=0;i<100;i++){
+        let newDiv=document.createElement("div")
+        newDiv.style.width="32px"
+        newDiv.style.height="32px"
+        // newDiv.style.backgroundColor="red"
+        newDiv.style.boxSizing="border-box"
+        newDiv.style.margin="0px"
+        userMap.appendChild(newDiv)
+      }
+
+      for (let i=0;i<array_library.length;i++){
+        let texture=document.createElement("img")
+        texture.src=array_library[i]
+        texture.style.boxSizing="border-box"
+        textures.appendChild(texture)
+      }
+
+      for (let i=0;i<textures.children.length;i++){
+        textures.children[i].addEventListener("click",function(event){
+          
+          currentImgSrc=event.currentTarget.src
+          event.currentTarget.classList.add("selected")
+          for (let j=0;j<textures.children.length;j++){
+            if (textures.children[j].src!=event.currentTarget.src){
+              textures.children[j].classList.remove("selected")
+            }
+          }
+        })
+      }
+      for (let i=0;i<userMap.children.length;i++){
+        userMap.children[i].addEventListener("click",function(event){
+          
+          event.currentTarget.style.backgroundColor="red"
+          event.currentTarget.style.backgroundImage="url("+currentImgSrc+")"
+        })
+      }
+    </script>
+
+  </body>
+</html>
